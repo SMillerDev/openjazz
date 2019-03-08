@@ -53,6 +53,7 @@ class File {
 		void               storeShort  (unsigned short int val);
 		signed int         loadInt     ();
 		void               storeInt    (signed int val);
+		void               storeData   (void* data, int length);
 		unsigned char*     loadBlock   (int length);
 		unsigned char*     loadRLE     (int length);
 		void               skipRLE     ();

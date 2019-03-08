@@ -299,6 +299,14 @@ void File::storeInt (signed int val) {
 
 }
 
+void File::storeData (void* data, int length) {
+
+	fwrite (data, length, 1, file);
+
+	return;
+
+}
+
 
 /**
  * Load a block of uncompressed data from the file.

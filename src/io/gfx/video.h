@@ -163,6 +163,7 @@ class Video {
 		void       flip                  (int mspf, PaletteEffect* paletteEffects = NULL, bool effectsStopped = false);
 
 		void       clearScreen           (int index);
+		void       saveScreenShot        ();
 
 };
 
@@ -182,5 +183,3 @@ EXTERN SDL_Surface*   createSurface  (unsigned char* pixels, int width, int heig
 EXTERN void           drawRect       (int x, int y, int width, int height, int index);
 
 #endif
-
-

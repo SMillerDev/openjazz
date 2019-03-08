@@ -34,8 +34,10 @@
 #include "setup.h"
 #include "util.h"
 #include "io/log.h"
+#include "io/file.h"
 
 #include <string.h>
+#include <miniz.h>
 
 
 /**
@@ -524,6 +526,10 @@ void Video::update (SDL_Event *event) {
 
 			}
 
+			// If F12 has been pressed, save a screenshot
+			if (event->key.keysym.sym == SDLK_F12)
+				saveScreenShot();
+
 			break;
     #endif
 
@@ -652,3 +658,56 @@ void drawRect (int x, int y, int width, int height, int index) {
 
 }
 
+/**
+ * Save a screenshot to numbered file
+ */
+void Video::saveScreenShot () {
+	char *check = new char[11];
+
+	for (int count = 1; count <= 100; count++) {
+
+		snprintf(check, 11, "OJ_%03d.png", count);
+
+		if (!fileExists(check)) break;
+
+	}
+
+    unsigned int rmask, gmask, bmask, amask;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	rmask = 0xff000000;
+	gmask = 0x00ff0000;
+	bmask = 0x0000ff00;
+	amask = 0x000000ff;
+#else
+	rmask = 0x000000ff;
+	gmask = 0x0000ff00;
+	bmask = 0x00ff0000;
+	amask = 0xff000000;
+#endif
+
+	SDL_Surface *rgb_image = SDL_CreateRGBSurface(SDL_HWSURFACE, screen->w, screen->h, 32, rmask, gmask, bmask, amask);
+	if (rgb_image) {
+		int ret = SDL_BlitSurface(screen, NULL, rgb_image, NULL);
+		if (ret == 0) {
+
+			size_t png_len = 0;
+			char *png_image = (char *)tdefl_write_image_to_png_file_in_memory(rgb_image->pixels, rgb_image->w, rgb_image->h, 4, &png_len);
+			if (png_image != NULL) {
+
+				File *png_file = new File(check, true);
+				png_file->storeData(png_image, png_len);
+				delete png_file;
+
+				mz_free(png_image);
+
+			}
+
+		}
+
+		free(rgb_image);
+
+	}
+
+	delete[] check;
+
+}
